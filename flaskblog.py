@@ -105,4 +105,4 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 # To run without debug you could set debug=False or
-# set the environment variables `export FLASK_APP=hello` and run `flask run`
+# set the environment variables `export FLASK_APP=flaskblog` and run `flask run`
