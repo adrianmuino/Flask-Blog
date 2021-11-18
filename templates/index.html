@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for blog in blogs %}
+        <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="#">{{ blog.author }} </a>
+                <small class="text-muted">| <i>{{ blog.date_published }} </i></small>
+                <small class="text-muted">| {{ blog.est_read_time }} min read</small>
+              </div>
+              <h2><a class="article-title" href="#">{{ blog.title }}</a></h2>
+              <p class="article-content">{{ blog.content }}</p>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content%}
