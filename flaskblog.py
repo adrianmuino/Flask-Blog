@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, flash, redirect
 from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
@@ -90,14 +90,22 @@ def home():
 def about():
     return render_template("about.html", title="About")
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
+    if form.validate_on_submit():
+        flash("Account for {} successfully created.".format(form.username.data), category="success")
+        return redirect(url_for("home"))
     return render_template("register.html", title="Register", form=form)
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        if form.username.data == "adrianmuino" and form.password.data == "asdfghjkl":
+            return redirect(url_for("home"))
+        else:
+            flash("Invalid username and password!", category="danger")
     return render_template("login.html", title="Login", form=form)
 
 # Use `python flaskblog.py` to run in debug
