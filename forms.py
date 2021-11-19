@@ -2,22 +2,28 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
+USR_MIN_LEN = 2
+USR_MAX_LEN = 20
+EMAIL_MAX_LEN = 120
+PASSWD_MIN_LEN = 8
+PASSWD_HASH_LEN = 60
+
 class RegistrationForm(FlaskForm):
     username = StringField("Username",
-                           validators=[DataRequired(), Length(min=2, max=20)])
+                           validators=[DataRequired(), Length(min=USR_MIN_LEN, max=USR_MAX_LEN)])
     email = StringField("Email",
-                        validators=[DataRequired(), Email()])
+                        validators=[DataRequired(), Email(), Length(max=EMAIL_MAX_LEN)])
     password = PasswordField("Password",
-                           validators=[DataRequired(), Length(min=8)])
+                           validators=[DataRequired(), Length(min=PASSWD_MIN_LEN)])
     confirm_password = PasswordField("Confirm Password",
-                                     validators=[DataRequired(), Length(min=8), EqualTo('password')])
+                                     validators=[DataRequired(), Length(min=PASSWD_MIN_LEN), EqualTo('password')])
     sign_up = SubmitField("Sign Up")
 
 class LoginForm(FlaskForm):
     username = StringField("Username",
-                           validators=[DataRequired(), Length(min=2, max=20)])
+                           validators=[DataRequired(), Length(min=USR_MIN_LEN, max=USR_MAX_LEN)])
     password = PasswordField("Password",
-                           validators=[DataRequired(), Length(min=8)])
+                           validators=[DataRequired(), Length(min=PASSWD_MIN_LEN)])
     # Browser login cookie
     remember_me = BooleanField("Remember Me")
 
