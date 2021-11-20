@@ -12,3 +12,6 @@ pip-delete-this-directory.txt
 # VS Code settings
 ./vscode/
 settings.json
+
+# Database files
+site.db
