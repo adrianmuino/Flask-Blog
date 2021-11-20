@@ -5,7 +5,7 @@ Here we also modify and read/write to the sample DB.
 ## NOTE:
 To follow this tutorial you need to have installed the dependencies in `requirements.txt`.
 
-You can run `./pip_dep_install.sh` to install these. _It is recommended to run the previous command inside your python virtual environment._
+You can run `./dependencies/pip_dep_install.sh` to install these. _It is recommended to run the previous command inside your python virtual environment._
 
 ### Start python interpreter shell
 ```bash
@@ -20,7 +20,7 @@ db.create_all()
 
 ### Add two users to the DB
 ```python
-from flaskblog import User, Post
+from flaskblog.models import User, Post
 user_1 = User(username="adrianmuino", email="a@email.com", password="password123")
 db.session.add(user_1)
 user_2 = User(username="joesmith10", email="joe@sample.com", password="wordpass321")
@@ -63,7 +63,8 @@ for post in user.posts:
 
 posts = Post.query.all()
 for post in posts:
-    print(post.title)
+    print("{} by {}".format(post.title, post.author.username))
+    print("{}\n".format(post.content))
 
 post = Post.query.first()
 post

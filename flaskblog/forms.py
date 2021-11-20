@@ -1,0 +1,25 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms.validators import DataRequired, Length, Email, EqualTo
+import flaskblog.vars as vars
+
+class RegistrationForm(FlaskForm):
+    username = StringField("Username",
+                           validators=[DataRequired(), Length(min=vars.USR_MIN_LEN, max=vars.USR_MAX_LEN)])
+    email = StringField("Email",
+                        validators=[DataRequired(), Email(), Length(max=vars.EMAIL_MAX_LEN)])
+    password = PasswordField("Password",
+                           validators=[DataRequired(), Length(min=vars.PASSWD_MIN_LEN, max=vars.PASSWD_MAX_LEN)])
+    confirm_password = PasswordField("Confirm Password",
+                                     validators=[DataRequired(), Length(min=vars.PASSWD_MIN_LEN, max=vars.PASSWD_MAX_LEN), EqualTo('password')])
+    sign_up = SubmitField("Sign Up")
+
+class LoginForm(FlaskForm):
+    username = StringField("Username",
+                           validators=[DataRequired(), Length(min=vars.USR_MIN_LEN, max=vars.USR_MAX_LEN)])
+    password = PasswordField("Password",
+                           validators=[DataRequired(), Length(min=vars.PASSWD_MIN_LEN, max=vars.PASSWD_MAX_LEN)])
+    # Browser login cookie
+    remember_me = BooleanField("Remember Me")
+
+    log_in = SubmitField("Log In")
