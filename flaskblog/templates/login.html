@@ -6,7 +6,7 @@
             <!-- Cross-Site Request Forgery (CSRF) Token -->
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Your blog is waiting, sign in.</legend>
+                <legend class="border-bottom mb-4">Your blog is waiting...</legend>
                 <div class="form-group mb-2">
                     {{ form.username.label(class="form-control-label mb-2") }}
                     {% if form.username.errors %}
