@@ -15,3 +15,5 @@ settings.json
 
 # Database files
 site.db
+
+.DS_Store
