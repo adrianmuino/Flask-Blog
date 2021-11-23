@@ -1,8 +1,10 @@
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm
+from flaskblog.forms import RegistrationForm, LoginForm, AccountUpdateForm
 from flaskblog.models import User, Post
 from flask import render_template, url_for, flash, redirect, request
 from flask_login import login_user, current_user, logout_user, login_required
+import os, secrets
+from PIL import Image
 
 blogs = [
     {
@@ -124,7 +126,32 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
 
-@app.route("/account")
+# This func can be improved to query db and make sure the generated unique hex_str is unique, else images with same name are overwritten
+def save_profile_pic(form_img_file):
+    hex_str = secrets.token_hex(16)
+    _, f_ext = os.path.splitext(form_img_file.filename)
+    hex_img_file = "{}{}".format(hex_str, f_ext)
+    img_path = os.path.join(app.root_path, "static/profile_pics", hex_img_file)
+    # Save image resized to size used in `main.css` to save space in our filesystem
+    size = (125, 125)
+    img = Image.open(form_img_file)
+    img.thumbnail(size)
+    img.save(img_path)
+    return hex_img_file
+
+@app.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
-    return render_template("account.html", title="Account")
+    form = AccountUpdateForm()
+    if form.validate_on_submit():
+        if form.picture.data:   # AccountUpdateForm() picture is not required in forms.py
+            current_user.profile_img_file = save_profile_pic(form.picture.data) # Could be improved to also delete old profile_img from machine
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash("Account successfully update.", category="success")
+        return redirect(url_for("account"))
+    elif request.method == "GET":
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template("account.html", title="Account", form=form)

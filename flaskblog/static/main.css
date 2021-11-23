@@ -75,12 +75,15 @@ body {
   }
   
   .account-img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     height: 125px;
     width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
   }
   
   .account-heading {
+    text-align:center;
+    margin:auto;
     font-size: 2.5rem;
   }
