@@ -17,3 +17,10 @@ settings.json
 site.db
 
 .DS_Store
+
+# Images except default.jpg
+*.jpg
+*.jpeg
+*.png
+
+!default.jpg
