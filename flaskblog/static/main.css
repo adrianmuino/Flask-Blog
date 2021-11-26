@@ -47,9 +47,9 @@ body {
   }
   
   .article-img {
-    height: 65px;
-    width: 65px;
-    margin-right: 16px;
+    height: 55px;
+    width: 55px;
+    margin-right: 5px;
   }
   
   .article-metadata {
@@ -86,4 +86,8 @@ body {
     text-align:center;
     margin:auto;
     font-size: 2.5rem;
+  }
+
+  .post-right {
+    float: right;
   }

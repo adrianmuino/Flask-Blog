@@ -3,7 +3,7 @@
     <div class="content-section">
       <div class="media">
         <div class="media-body">
-          <img class="rounded-circle account-img" src="{{ url_for('static', filename="/profile_pics/{}".format(current_user.profile_img_file)) }}">
+          <img class="rounded-circle account-img" src="{{ url_for('static', filename="profile_pics/{}".format(current_user.profile_img_file)) }}">
           <h2 class="account-heading">{{ current_user.username }}</h2>
           <p class="text-secondary" style="text-align:center">{{ current_user.email }}</p>
         </div>

@@ -1,91 +1,27 @@
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, AccountUpdateForm
+from flaskblog.forms import RegistrationForm, LoginForm, AccountUpdateForm, PostForm
 from flaskblog.models import User, Post
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
 import os, secrets
 from PIL import Image
 
-blogs = [
-    {
-        'author': "Adrian A. Muino",
-        'title': "Writing My First Web App",
-        'content': "This is a sample blog post about my first ever web application. Pretty cool!",
-        'date_published': "Nov 16 2021"
-    },
-    {
-        'author': "Jose Blake",
-        'title': "Sample Post Title 2",
-        'content': """This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.
-                    This is another blog post just filling up some space.""",
-        'date_published': "Oct 10 2021"
-    },
-    {
-        'author': "Jane Blake",
-        'title': "First Post",
-        'content': "This is the first blog ever in the Flask site.",
-        'date_published': "Jan 1 2000"
-    }
-]
+blogs = []
 
 # Adults average words per minute (reading)
 avg_wpm = 200
 
-for blog in blogs:
-    blog['est_read_time'] = int(len(blog['content'].split())/avg_wpm)
+@app.template_global()
+def est_read_time(content):
+    return int(len(content.split())/avg_wpm)
 
 @app.route("/")
 @app.route("/home")
 @login_required
 def home():
-    return render_template("index.html", blogs=blogs)
+    global blogs
+    blogs = Post.query.all()
+    return render_template("index.html", blogs=reversed(blogs))
 
 @app.route("/about")
 def about():
@@ -155,3 +91,50 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template("account.html", title="Account", form=form)
+
+@app.route("/create_post", methods=["GET", "POST"])
+@login_required
+def create_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash("Your post was successfully created.", category="success")
+        return redirect(url_for("home"))
+    return render_template("create_post.html", blogs=blogs, form=form)
+
+@app.route("/post/<int:post_id>")
+def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template("post.html", post=post)
+
+@app.route("/post/<int:post_id>/update", methods=["GET", "POST"])
+@login_required
+def post_update(post_id):
+    post = Post.query.get_or_404(post_id)
+    if current_user != post.author:
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.commit()
+        flash("Post successfully updated.", category="success")
+        return redirect(url_for("post", post_id=post.id))
+    elif request.method == "GET":
+        form.title.data = post.title
+        form.content.data = post.content
+    return render_template("create_post.html", title="Update Post", form=form)
+
+@app.route("/post/<int:post_id>/delete", methods=["POST"])
+@login_required
+def post_delete(post_id):
+    post = Post.query.get_or_404(post_id)
+    if current_user != post.author:
+        abort(403)
+    else:
+        db.session.delete(post)
+        db.session.commit()
+        flash("Post deleted.", category="success")
+        return redirect(url_for("home"))

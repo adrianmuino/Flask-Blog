@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+      <!-- Completing this form will make a POST request to the action="" route, which here is the current route "/register" -->
+      <form method="POST" action="">
+          <!-- Cross-Site Request Forgery (CSRF) Token -->
+          {{ form.hidden_tag() }}
+          <fieldset class="form-group">
+              <legend class="border-bottom mb-2">Create New Post</legend>
+              <div class="form-group mb-2">
+                  {{ form.title.label(class="form-control-label mb-2") }}
+                  {% if form.title.errors %}
+                      {{ form.title(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.title.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.title(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+              <div class="form-group mb-2">
+                  {{ form.content.label(class="form-control-label mb-2") }}
+                  {% if form.content.errors %}
+                      {{ form.content(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.content.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.content(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+          </fieldset>
+          <div class="form-group">
+              {{ form.create(class="btn btn-outline-info") }}
+          </div>
+      </form>
+    </div>
+    {% for blog in blogs %}
+        <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <a class="mr-2" href="#">{{ blog.author.username }} </a>
+                <small class="text-muted">| <i>{{ blog.date_posted.strftime("%b %d %Y") }} </i></small>
+                <small class="text-muted">| {{ est_read_time(blog.content) }} min read</small>
+              </div>
+              <h2><a class="article-title" href="#">{{ blog.title }}</a></h2>
+              <p class="article-content">{{ blog.content }}</p>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content%}
