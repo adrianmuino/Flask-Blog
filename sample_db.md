@@ -61,7 +61,7 @@ user.posts
 for post in user.posts:
     print(post.title)
 
-posts = Post.query.all()
+posts = Post.query.all()  # EXPENSIVE!!! Consider pagination.
 for post in posts:
     print("{} by {}".format(post.title, post.author.username))
     print("{}\n".format(post.content))
@@ -70,6 +70,18 @@ post = Post.query.first()
 post
 post.user_id
 post.author
+```
+
+### Post pagination
+``` python
+posts = Post.query.paginate(per_page=5)
+posts.page  # Get current page number
+for post in posts.items:
+    print(post.title)
+posts = Post.query.paginate(per_page=10, page=3)    # Get page 3 with 10 posts per page
+for page in posts.iter_pages():
+    print(page)
+posts.total  # Get total number of posts
 ```
 
 ### Drop all database tables (user and post tables)
