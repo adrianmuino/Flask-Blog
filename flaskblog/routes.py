@@ -6,8 +6,6 @@ from flask_login import login_user, current_user, logout_user, login_required
 import os, secrets
 from PIL import Image
 
-blogs = []
-
 # Adults average words per minute (reading)
 avg_wpm = 200
 
@@ -15,13 +13,14 @@ avg_wpm = 200
 def est_read_time(content):
     return int(len(content.split())/avg_wpm)
 
-@app.route("/")
 @app.route("/home")
+@app.route("/")
 @login_required
 def home():
-    global blogs
-    blogs = Post.query.all()
-    return render_template("index.html", blogs=reversed(blogs))
+    page = request.args.get("page", type=int)    # Get page param, if there's no page param then default is 1. If param value is not an int then throw 404 error
+    blogs = Post.query.order_by(Post.date_posted.desc()).paginate(per_page=5, page=page)
+    pages = blogs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+    return render_template("index.html", blogs=blogs, pages=pages)
 
 @app.route("/about")
 def about():
@@ -49,12 +48,16 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for("home"))
+        if user:
+            try:
+                bcrypt.check_password_hash(user.password, form.password.data)
+                login_user(user, remember=form.remember_me.data)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for("home"))
+            except:
+                flash("Invalid username and password!", category="danger")
         else:
-            flash("Invalid username and password!", category="danger")
+            flash("User {} does not exist!".format(form.username.data), category="danger")
     return render_template("login.html", title="Login", form=form)
 
 @app.route("/logout")
@@ -92,6 +95,16 @@ def account():
         form.email.data = current_user.email
     return render_template("account.html", title="Account", form=form)
 
+@app.route("/user/<string:username>")
+def user_posts(username):
+    page = request.args.get("page", type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    blogs = Post.query.filter_by(author=user)\
+        .order_by(Post.date_posted.desc())\
+        .paginate(per_page=2, page=page)
+    pages = blogs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+    return render_template("user.html", user=user, blogs=blogs, pages=pages)
+
 @app.route("/create_post", methods=["GET", "POST"])
 @login_required
 def create_post():
@@ -102,7 +115,7 @@ def create_post():
         db.session.commit()
         flash("Your post was successfully created.", category="success")
         return redirect(url_for("home"))
-    return render_template("create_post.html", blogs=blogs, form=form)
+    return render_template("create_post.html", form=form)
 
 @app.route("/post/<int:post_id>")
 def post(post_id):

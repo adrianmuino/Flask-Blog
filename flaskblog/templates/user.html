@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
+    <h2>Blog Posts by {{ user.username }} ({{ blogs.total }})</h2>
     {% for blog in blogs.items %}
         <article class="media content-section">
             <div class="media-body">
               <div class="article-metadata">
                 <img class="rounded-circle article-img mb-2" src="{{ url_for('static', filename="profile_pics/{}".format(blog.author.profile_img_file)) }}">
-                <a class="mr-2" href="{{ url_for('user_posts', username=blog.author.username) }}">{{ blog.author.username }} </a>
+                <a class="mr-2" href="#">{{ blog.author.username }} </a>
                 <small class="text-muted">| <i>{{ blog.date_posted.strftime("%b %d %Y") }} </i></small>
                 <small class="text-muted">| {{ est_read_time(blog.content) }} min read</small>
               </div>
@@ -17,11 +18,11 @@
     <div style="text-align: center;">
       {% for page_num in pages %}
         {% if page_num == blogs.page %}
-          <a class="mr-2 btn btn-secondary" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+          <a class="mr-2 btn btn-secondary" href="{{ url_for('user_posts', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% elif page_num == None %}
-          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('home', page=page_num) }}">...</a>
+          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('user_posts', username=user.username, page=page_num) }}">...</a>
         {% else %}
-          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('user_posts', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% endfor %}
     </div>

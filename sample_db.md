@@ -78,9 +78,11 @@ posts = Post.query.paginate(per_page=5)
 posts.page  # Get current page number
 for post in posts.items:
     print(post.title)
-posts = Post.query.paginate(per_page=10, page=3)    # Get page 3 with 10 posts per page
-for page in posts.iter_pages():
+
+posts = Post.query.paginate(per_page=2, page=3)    # Get page 3 with 2 posts per page
+for page in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2):
     print(page)
+
 posts.total  # Get total number of posts
 ```
 

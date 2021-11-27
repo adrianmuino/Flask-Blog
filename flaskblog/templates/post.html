@@ -5,7 +5,7 @@
             <div class="media-body">
               <div class="article-metadata">
                 <img class="rounded-circle article-img mb-2" src="{{ url_for('static', filename="profile_pics/{}".format(post.author.profile_img_file)) }}">
-                <a class="mr-2" href="#">{{ post.author.username }} </a>
+                <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }} </a>
                 <small class="text-muted">| <i>{{ post.date_posted.strftime("%b %d %Y") }} </i></small>
                 <small class="text-muted">| {{ est_read_time(post.content) }} min read</small>
                 {% if current_user == post.author %}
