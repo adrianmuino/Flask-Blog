@@ -1,6 +1,7 @@
-from flaskblog import db, login_manager
+from flaskblog import db, login_manager, app
 import flaskblog.vars as vars
 from datetime import datetime
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin
 
 @login_manager.user_loader
@@ -18,6 +19,19 @@ class User(db.Model, UserMixin):
     # Additional query that gets all the user's posts lazily loaded (as they are needed)
     posts = db.relationship("Post", backref="author", lazy=True) # post.author is linked to User() class
     # Note: we can do `post.author` but know that this runs a query in the background b/c `author` is not an attribute in the post table
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id':self.id}).decode("utf-8")
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
     def __repr__(self):
         return "User({}, {}, {})".format(self.username, self.email, self.profile_img_file)
