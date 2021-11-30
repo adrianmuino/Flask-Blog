@@ -10,7 +10,7 @@
                 <small class="text-muted">| <i>{{ blog.date_posted.strftime("%b %d %Y") }} </i></small>
                 <small class="text-muted">| {{ est_read_time(blog.content) }} min read</small>
               </div>
-              <h2><a class="article-title" href="{{ url_for('post', post_id=blog.id) }}">{{ blog.title }}</a></h2>
+              <h2><a class="article-title" href="{{ url_for('posts.post', post_id=blog.id) }}">{{ blog.title }}</a></h2>
               <p class="article-content">{{ blog.content }}</p>
             </div>
         </article>
@@ -18,11 +18,11 @@
     <div style="text-align: center;">
       {% for page_num in pages %}
         {% if page_num == blogs.page %}
-          <a class="mr-2 btn btn-secondary" href="{{ url_for('user_posts', username=user.username, page=page_num) }}">{{ page_num }}</a>
+          <a class="mr-2 btn btn-secondary" href="{{ url_for('users.user_posts', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% elif page_num == None %}
-          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('user_posts', username=user.username, page=page_num) }}">...</a>
+          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('users.user_posts', username=user.username, page=page_num) }}">...</a>
         {% else %}
-          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('user_posts', username=user.username, page=page_num) }}">{{ page_num }}</a>
+          <a class="mr-2 btn btn-outline-secondary" href="{{ url_for('users.user_posts', username=user.username, page=page_num) }}">{{ page_num }}</a>
         {% endif %}
       {% endfor %}
     </div>

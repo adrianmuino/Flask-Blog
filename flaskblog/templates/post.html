@@ -5,11 +5,11 @@
             <div class="media-body">
               <div class="article-metadata">
                 <img class="rounded-circle article-img mb-2" src="{{ url_for('static', filename="profile_pics/{}".format(post.author.profile_img_file)) }}">
-                <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }} </a>
+                <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{ post.author.username }} </a>
                 <small class="text-muted">| <i>{{ post.date_posted.strftime("%b %d %Y") }} </i></small>
                 <small class="text-muted">| {{ est_read_time(post.content) }} min read</small>
                 {% if current_user == post.author %}
-                <a class="btn btn-secondary btn-sm m-1 post-right" href="{{ url_for('post_update', post_id=post.id) }}" style="color: aliceblue;">Update</a>
+                <a class="btn btn-secondary btn-sm m-1 post-right" href="{{ url_for('posts.post_update', post_id=post.id) }}" style="color: aliceblue;">Update</a>
                 <button type="button" class="btn btn-danger btn-sm m-1 post-right" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
                 <div style="clear: both;"></div>
                 {% endif %}
@@ -27,7 +27,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <form action="{{ url_for('post_delete', post_id=post.id) }}" method="POST">
+                <form action="{{ url_for('posts.post_delete', post_id=post.id) }}" method="POST">
                   <input class="btn btn-danger" type="submit" value="Delete"> 
                 </form>
               </div>

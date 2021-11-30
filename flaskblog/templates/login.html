@@ -41,7 +41,7 @@
             <div class="form-group mb-2">
                 {{ form.log_in(class="btn btn-outline-info") }}
                 <small class="text-muted ml-2">
-                    <a href="{{ url_for('request_reset') }}">Forgot Password?</a>
+                    <a href="{{ url_for('users.request_reset') }}">Forgot Password?</a>
                 </small>
             </div>
         </form>
@@ -49,7 +49,7 @@
     <div class="border-top pt-1">
         <!-- url_for() takes as argument the name of the route function in flaskblog.py-->
         <small class="text-muted">
-            Not a member? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Here </a>
+            Not a member? <a class="ml-2" href="{{ url_for('users.register') }}">Sign Up Here </a>
         </small>
     </div>
 {% endblock content%}
