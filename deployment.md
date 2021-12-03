@@ -291,3 +291,48 @@ On the last line of the crontab file, add the following:
 ```
 30 4 1 * * sudo certbot renew --quiet
 ```
+
+### Upgrade to HTTP2 protocol (Ubuntu)
+__This section assumes you have completed all the previous steps in this deployment tutorial.__
+Edit the file `/etc/nginx/sites-enabled/flaskblog` to allow http2 on port 443:
+```
+server {
+    ...
+    listen 443 ssl http2;
+}
+```
+In the same file, comment the following line:
+```
+# include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+```
+Then add the following line below it:
+```
+ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+```
+
+Check that the nginx configuration is error-free:
+```bash
+sudo nginx -t
+```
+
+If there's no error, then symply restart nginx and your server should now be using http2.
+```bash
+sudo systemctl reload nginx
+```
+
+__Finally let's enable HSTS__
+
+Open the `/etc/nginx/nginx.conf` and under the line `include /etc/nginx/sites-enabled/*;` add the following line :
+```
+add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;
+```
+
+Check that the nginx configuration is error-free:
+```bash
+sudo nginx -t
+```
+
+If there's no error, then symply restart nginx and your server now has HSTS enabled.
+```bash
+sudo systemctl reload nginx
+```
