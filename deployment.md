@@ -268,7 +268,7 @@ Edit the file `/etc/nginx/sites-enabled/flaskblog` to point the server_name to t
 server {
     ...
     listen 80;
-   server_name <your_domain>;
+   server_name <your_hostname.your_domain>;
 }
 ```
 Navigate to letsencrypt.org/getting-started/#with-shell-access and click the Certbot link.
