@@ -258,6 +258,36 @@ Then run:
 sudo systemctl restart nginx
 ```
 
+Additionally, we can improve this by adding unit tests, creating custom error pages for nginx errors, migrating to other DBs (perhaps PostgreSQL), adding DB indexes, etc etc etc.
 
+### Setup SSL/TLS certificate using Let's Encrypt (Optional)
+__This section assumes you have purchased a domain name and setup the required DNS records to have a functional domain name for your application.__
 
-Additionally, we can improve this by using custom DNS, HTTPS, adding unit tests, creating custom error pages for nginx errors, migrating to other DBs (perhaps PostgreSQL), adding DB indexes, etc etc etc.
+Edit the file `/etc/nginx/sites-enabled/flaskblog` to point the server_name to the domain:
+```
+server {
+    ...
+    listen 80;
+   server_name <your_domain>;
+}
+```
+Navigate to letsencrypt.org/getting-started/#with-shell-access and click the Certbot link.
+Enter your Nginx as the web server and enter your OS distribution. Follow the instructions given!
+
+After following all the instructions provided in the Certbot link, your Nginx configuration file should have slightly changed to contain port 443(ssl) and certificate information. To test the nginx configuration, run `sudo nginx -t`.
+
+Now we need to allow HTTPS traffic in the firewall.
+```bash
+sudo ufw allow https
+sudo systemctl restart nginx
+```
+
+Finally we will create a cronjob to renew the SSL/TLS certificates on the first of every month.
+```bash
+sudo crontab -e
+```
+Choose your desired editor.
+On the last line of the crontab file, add the following:
+```
+30 4 1 * * sudo certbot renew --quiet
+```
